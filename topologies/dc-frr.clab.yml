@@ -1,0 +1,164 @@
+# Data center spine-leaf lab, all-FRRouting variant (runs without any vendor image).
+#
+#   2 spines (FRR, AS 65000)  x  3 leaves (FRR, AS 65101-65103)
+#   each leaf: VLAN-aware Linux bridge, VLAN 10 + VLAN 20 SVIs, one host per VLAN
+#   eBGP on every spine-leaf /31, ECMP across both spines, PIM-SM with the RP
+#   on spine1 (10.0.0.1), IGMPv3 on the SVIs.
+#
+# deploy:  containerlab deploy -t topologies/dc-frr.clab.yml
+# destroy: containerlab destroy -t topologies/dc-frr.clab.yml --cleanup
+name: dc-frr
+
+mgmt:
+  network: dclab-mgmt
+  ipv4-subnet: 172.30.30.0/24
+
+topology:
+  defaults:
+    env:
+      TZ: UTC
+
+  kinds:
+    linux:
+      image: dclab/host:1.0
+
+  nodes:
+    spine1:
+      kind: linux
+      image: dclab/frr-ssh:10.2.1
+      mgmt-ipv4: 172.30.30.11
+      binds:
+        - ../configs/frr/daemons:/etc/frr/daemons:ro
+        - ../configs/frr/spine1/frr.conf:/etc/frr/frr.conf
+        - ../configs/frr/sysctl.sh:/etc/frr/sysctl.sh:ro
+      exec:
+        - /etc/frr/sysctl.sh
+      labels:
+        role: spine
+
+    spine2:
+      kind: linux
+      image: dclab/frr-ssh:10.2.1
+      mgmt-ipv4: 172.30.30.12
+      binds:
+        - ../configs/frr/daemons:/etc/frr/daemons:ro
+        - ../configs/frr/spine2/frr.conf:/etc/frr/frr.conf
+        - ../configs/frr/sysctl.sh:/etc/frr/sysctl.sh:ro
+      exec:
+        - /etc/frr/sysctl.sh
+      labels:
+        role: spine
+
+    leaf1:
+      kind: linux
+      image: dclab/frr-ssh:10.2.1
+      mgmt-ipv4: 172.30.30.21
+      binds:
+        - ../configs/frr/daemons:/etc/frr/daemons:ro
+        - ../configs/frr/leaf1/frr.conf:/etc/frr/frr.conf
+        - ../configs/frr/sysctl.sh:/etc/frr/sysctl.sh:ro
+        - ../configs/frr/leaf1/l2-setup.sh:/etc/frr/l2-setup.sh:ro
+      exec:
+        - /etc/frr/l2-setup.sh
+      labels:
+        role: leaf
+
+    leaf2:
+      kind: linux
+      image: dclab/frr-ssh:10.2.1
+      mgmt-ipv4: 172.30.30.22
+      binds:
+        - ../configs/frr/daemons:/etc/frr/daemons:ro
+        - ../configs/frr/leaf2/frr.conf:/etc/frr/frr.conf
+        - ../configs/frr/sysctl.sh:/etc/frr/sysctl.sh:ro
+        - ../configs/frr/leaf2/l2-setup.sh:/etc/frr/l2-setup.sh:ro
+      exec:
+        - /etc/frr/l2-setup.sh
+      labels:
+        role: leaf
+
+    leaf3:
+      kind: linux
+      image: dclab/frr-ssh:10.2.1
+      mgmt-ipv4: 172.30.30.23
+      binds:
+        - ../configs/frr/daemons:/etc/frr/daemons:ro
+        - ../configs/frr/leaf3/frr.conf:/etc/frr/frr.conf
+        - ../configs/frr/sysctl.sh:/etc/frr/sysctl.sh:ro
+        - ../configs/frr/leaf3/l2-setup.sh:/etc/frr/l2-setup.sh:ro
+      exec:
+        - /etc/frr/l2-setup.sh
+      labels:
+        role: leaf
+
+    # hosts: h<leaf><vlan-index>; h11 is the market-data feed publisher
+    h11:
+      kind: linux
+      mgmt-ipv4: 172.30.30.111
+      binds: [../apps/mcast:/opt/mcast:ro]
+      exec:
+        - ip addr add 10.10.1.10/24 dev eth1
+        - ip link set eth1 up
+        - ip route replace default via 10.10.1.1 dev eth1
+      labels: {role: host, leaf: leaf1, vlan: "10", mcast: publisher}
+    h12:
+      kind: linux
+      mgmt-ipv4: 172.30.30.112
+      binds: [../apps/mcast:/opt/mcast:ro]
+      exec:
+        - ip addr add 10.20.1.10/24 dev eth1
+        - ip link set eth1 up
+        - ip route replace default via 10.20.1.1 dev eth1
+      labels: {role: host, leaf: leaf1, vlan: "20"}
+    h21:
+      kind: linux
+      mgmt-ipv4: 172.30.30.121
+      binds: [../apps/mcast:/opt/mcast:ro]
+      exec:
+        - ip addr add 10.10.2.10/24 dev eth1
+        - ip link set eth1 up
+        - ip route replace default via 10.10.2.1 dev eth1
+      labels: {role: host, leaf: leaf2, vlan: "10", mcast: subscriber}
+    h22:
+      kind: linux
+      mgmt-ipv4: 172.30.30.122
+      binds: [../apps/mcast:/opt/mcast:ro]
+      exec:
+        - ip addr add 10.20.2.10/24 dev eth1
+        - ip link set eth1 up
+        - ip route replace default via 10.20.2.1 dev eth1
+      labels: {role: host, leaf: leaf2, vlan: "20"}
+    h31:
+      kind: linux
+      mgmt-ipv4: 172.30.30.131
+      binds: [../apps/mcast:/opt/mcast:ro]
+      exec:
+        - ip addr add 10.10.3.10/24 dev eth1
+        - ip link set eth1 up
+        - ip route replace default via 10.10.3.1 dev eth1
+      labels: {role: host, leaf: leaf3, vlan: "10"}
+    h32:
+      kind: linux
+      mgmt-ipv4: 172.30.30.132
+      binds: [../apps/mcast:/opt/mcast:ro]
+      exec:
+        - ip addr add 10.20.3.10/24 dev eth1
+        - ip link set eth1 up
+        - ip route replace default via 10.20.3.1 dev eth1
+      labels: {role: host, leaf: leaf3, vlan: "20", mcast: subscriber}
+
+  links:
+    # fabric: spineN ethL <-> leafL ethN
+    - endpoints: ["spine1:eth1", "leaf1:eth1"]
+    - endpoints: ["spine1:eth2", "leaf2:eth1"]
+    - endpoints: ["spine1:eth3", "leaf3:eth1"]
+    - endpoints: ["spine2:eth1", "leaf1:eth2"]
+    - endpoints: ["spine2:eth2", "leaf2:eth2"]
+    - endpoints: ["spine2:eth3", "leaf3:eth2"]
+    # access: eth3 = VLAN 10, eth4 = VLAN 20
+    - endpoints: ["leaf1:eth3", "h11:eth1"]
+    - endpoints: ["leaf1:eth4", "h12:eth1"]
+    - endpoints: ["leaf2:eth3", "h21:eth1"]
+    - endpoints: ["leaf2:eth4", "h22:eth1"]
+    - endpoints: ["leaf3:eth3", "h31:eth1"]
+    - endpoints: ["leaf3:eth4", "h32:eth1"]
