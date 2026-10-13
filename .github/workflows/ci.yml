@@ -30,7 +30,7 @@ jobs:
           docker run --rm -v "$PWD/configs/frr:/cfg:ro" quay.io/frrouting/frr:10.2.1 \
             sh -c 'touch /etc/frr/vtysh.conf; for f in /cfg/*/frr.conf; do echo "== $f"; vtysh -C -f "$f" || exit 1; done'
 
-      - name: Check Grafana dashboard is generated from build_dashboard.py
+      - name: Check Grafana dashboard JSON matches build_dashboard.py
         run: |
           python monitoring/grafana/build_dashboard.py
           git diff --exit-code monitoring/grafana/dashboards/
