@@ -1,0 +1,81 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  lint-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install Python dependencies
+        run: pip install -r automation/requirements-dev.txt
+
+      - name: Lint YAML (topologies, inventories, compose, provisioning)
+        run: yamllint .
+
+      - name: Lint shell scripts
+        run: shellcheck scripts/*.sh configs/frr/sysctl.sh configs/frr/*/l2-setup.sh images/frr-ssh/entrypoint.sh
+
+      - name: Check FRR configs parse (vtysh dry run)
+        run: |
+          docker run --rm -v "$PWD/configs/frr:/cfg:ro" quay.io/frrouting/frr:10.2.1 \
+            sh -c 'for f in /cfg/*/frr.conf; do echo "== $f"; vtysh --dryrun --inputfile="$f" || exit 1; done'
+
+      - name: Check Grafana dashboard is generated from build_dashboard.py
+        run: |
+          python monitoring/grafana/build_dashboard.py
+          git diff --exit-code monitoring/grafana/dashboards/
+
+      - name: Unit tests
+        run: python -m pytest -q
+
+  lab:
+    # Deploy the all-FRR lab with containerlab on the runner and run the
+    # end-to-end verification plus the automation checks against it.
+    needs: lint-and-test
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install containerlab
+        run: bash -c "$(curl -sL https://get.containerlab.dev)"
+
+      - name: Build lab images
+        run: |
+          docker build -t dclab/frr-ssh:10.2.1 images/frr-ssh
+          docker build -t dclab/host:1.0 images/host
+          docker build -t dclab/automation:1.0 -f images/automation/Dockerfile .
+
+      - name: Deploy dc-frr
+        run: sudo containerlab deploy -t topologies/dc-frr.clab.yml
+
+      - name: Verify BGP, routing, inter-VLAN ping and multicast delivery
+        run: OUT=/tmp/verification scripts/verify.sh
+
+      - name: Automation check and backup
+        run: |
+          scripts/automation.sh check -i inventory/frr-lab.yml --json /lab/backups/check.json
+          scripts/automation.sh backup -i inventory/frr-lab.yml
+
+      - name: Upload outputs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lab-outputs
+          path: |
+            /tmp/verification
+            backups/
+
+      - name: Destroy lab
+        if: always()
+        run: sudo containerlab destroy -t topologies/dc-frr.clab.yml --cleanup
