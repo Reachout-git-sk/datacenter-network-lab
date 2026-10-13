@@ -1,0 +1,59 @@
+# Monitoring stack for the lab: exporter -> Prometheus -> Grafana.
+# All three join the containerlab management network (created by
+# `containerlab deploy`), so the exporter can SSH to every node.
+#
+#   docker compose -f monitoring/docker-compose.yml up -d --build
+#   open http://localhost:3000/d/dc-fabric  (anonymous viewer access)
+name: dclab-monitoring
+
+services:
+  exporter:
+    image: dclab/automation:1.0
+    build:
+      context: ..
+      dockerfile: images/automation/Dockerfile
+    command:
+      - python
+      - -m
+      - monitoring.exporter.exporter
+      - --inventory=inventory/frr-lab.yml
+      - --topology=topologies/dc-frr.clab.yml
+      - --interval=5
+    volumes:
+      - ..:/lab:ro
+    working_dir: /lab
+    ports: ["9500:9500"]
+    restart: unless-stopped
+
+  prometheus:
+    image: prom/prometheus:latest
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+      - --storage.tsdb.retention.time=2d
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    ports: ["9090:9090"]
+    restart: unless-stopped
+
+  grafana:
+    image: grafana/grafana:latest
+    environment:
+      GF_AUTH_ANONYMOUS_ENABLED: "true"
+      GF_AUTH_ANONYMOUS_ORG_ROLE: Viewer
+      GF_AUTH_DISABLE_LOGIN_FORM: "false"
+      GF_SECURITY_ADMIN_PASSWORD: admin
+      GF_DASHBOARDS_DEFAULT_HOME_DASHBOARD_PATH: /var/lib/grafana/dashboards/dc-fabric.json
+      GF_NEWS_NEWS_FEED_ENABLED: "false"
+      GF_ANALYTICS_REPORTING_ENABLED: "false"
+      GF_ANALYTICS_CHECK_FOR_UPDATES: "false"
+    volumes:
+      - ./grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./grafana/dashboards:/var/lib/grafana/dashboards:ro
+    ports: ["3000:3000"]
+    depends_on: [prometheus]
+    restart: unless-stopped
+
+networks:
+  default:
+    name: dclab-mgmt
+    external: true
