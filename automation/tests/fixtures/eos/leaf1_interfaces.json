@@ -1,0 +1,32 @@
+{
+  "interfaces": {
+    "Ethernet1": {
+      "name": "Ethernet1",
+      "interfaceStatus": "connected",
+      "lineProtocolStatus": "up",
+      "description": "to spine1 eth1",
+      "interfaceCounters": {
+        "inOctets": 120400, "inUcastPkts": 900, "inMulticastPkts": 310, "inBroadcastPkts": 0,
+        "outOctets": 98000, "outUcastPkts": 850, "outMulticastPkts": 300, "outBroadcastPkts": 2,
+        "totalInErrors": 0, "totalOutErrors": 0, "inDiscards": 0, "outDiscards": 0
+      }
+    },
+    "Ethernet2": {
+      "name": "Ethernet2",
+      "interfaceStatus": "disabled",
+      "lineProtocolStatus": "down",
+      "description": "to spine2 eth1",
+      "interfaceCounters": {
+        "inOctets": 5000, "inUcastPkts": 40, "inMulticastPkts": 10, "inBroadcastPkts": 0,
+        "outOctets": 4000, "outUcastPkts": 35, "outMulticastPkts": 9, "outBroadcastPkts": 0,
+        "totalInErrors": 3, "totalOutErrors": 0, "inDiscards": 1, "outDiscards": 0
+      }
+    },
+    "Vlan10": {
+      "name": "Vlan10",
+      "interfaceStatus": "connected",
+      "lineProtocolStatus": "up",
+      "description": "SVI VLAN 10"
+    }
+  }
+}

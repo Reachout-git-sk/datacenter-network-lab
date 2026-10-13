@@ -1,0 +1,38 @@
+{
+  "vrfs": {
+    "default": {
+      "routerId": "10.0.0.11",
+      "asn": "65101",
+      "peers": {
+        "10.1.1.0": {
+          "description": "spine1",
+          "version": 4,
+          "msgReceived": 41,
+          "msgSent": 44,
+          "inMsgQueue": 0,
+          "outMsgQueue": 0,
+          "asn": "65000",
+          "prefixAccepted": 7,
+          "prefixReceived": 7,
+          "upDownTime": 1791910522.1,
+          "underMaintenance": false,
+          "peerState": "Established"
+        },
+        "10.1.2.0": {
+          "description": "spine2",
+          "version": 4,
+          "msgReceived": 3,
+          "msgSent": 5,
+          "inMsgQueue": 0,
+          "outMsgQueue": 0,
+          "asn": "65000",
+          "prefixAccepted": 0,
+          "prefixReceived": 0,
+          "upDownTime": 1791910522.1,
+          "underMaintenance": false,
+          "peerState": "Active"
+        }
+      }
+    }
+  }
+}

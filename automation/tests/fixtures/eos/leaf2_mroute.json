@@ -1,0 +1,10 @@
+{
+  "groups": {
+    "239.1.1.1": {
+      "groupSources": {
+        "0.0.0.0": {"rpfInterface": "Ethernet1", "rpfNeighbor": "10.1.1.2", "oifList": ["Vlan10"]},
+        "10.10.1.10": {"rpfInterface": "Ethernet1", "rpfNeighbor": "10.1.1.2", "oifList": ["Vlan10"]}
+      }
+    }
+  }
+}

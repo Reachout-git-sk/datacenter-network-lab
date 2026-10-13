@@ -1,0 +1,17 @@
+{
+  "vrfs": {
+    "default": {
+      "neighbors": {
+        "10.1.1.0": {
+          "address": "10.1.1.0",
+          "interface": "Ethernet1",
+          "creationTime": 1791910522.0,
+          "lastRefreshTime": 1791910600.0,
+          "holdTime": 105,
+          "mode": {"mode": "Sparse", "borderRouter": false},
+          "bfdState": "disabled"
+        }
+      }
+    }
+  }
+}

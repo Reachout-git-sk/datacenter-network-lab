@@ -1,0 +1,10 @@
+! Command: show running-config
+! device: leaf1 (cEOSLab, EOS-4.33.1F)
+! Time: Tue Oct 13 16:00:00 2026
+!
+hostname leaf1
+!
+vlan 10
+   name HOSTS-A
+!
+end

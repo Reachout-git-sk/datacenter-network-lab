@@ -1,0 +1,25 @@
+{
+  "eth1":{
+    "10.1.1.0":{
+      "interface":"eth1",
+      "neighbor":"10.1.1.0",
+      "upTime":"00:01:55",
+      "holdTime":"00:01:19",
+      "holdTimeMax":105,
+      "drPriority":1
+    }
+  },
+  "eth2":{
+    "10.1.2.0":{
+      "interface":"eth2",
+      "neighbor":"10.1.2.0",
+      "upTime":"00:01:56",
+      "holdTime":"00:01:18",
+      "holdTimeMax":105,
+      "drPriority":1
+    }
+  },
+  "lo":{},
+  "vlan10":{},
+  "vlan20":{}
+}
