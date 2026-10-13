@@ -1,0 +1,52 @@
+# captured 2026-10-13T16:55:35Z from lab dc-frr
+
+===== h11 -> 10.20.1.10 : inter-VLAN on leaf1 (VLAN10 -> VLAN20) =====
+PING 10.20.1.10 (10.20.1.10) 56(84) bytes of data.
+64 bytes from 10.20.1.10: icmp_seq=1 ttl=63 time=0.966 ms
+64 bytes from 10.20.1.10: icmp_seq=2 ttl=63 time=0.055 ms
+64 bytes from 10.20.1.10: icmp_seq=3 ttl=63 time=0.100 ms
+
+--- 10.20.1.10 ping statistics ---
+3 packets transmitted, 3 received, 0% packet loss, time 2033ms
+rtt min/avg/max/mdev = 0.055/0.373/0.966/0.419 ms
+RESULT: PASS
+
+===== h11 -> 10.10.2.10 : leaf1 VLAN10 -> leaf2 VLAN10 (across the fabric) =====
+PING 10.10.2.10 (10.10.2.10) 56(84) bytes of data.
+64 bytes from 10.10.2.10: icmp_seq=1 ttl=61 time=1.48 ms
+64 bytes from 10.10.2.10: icmp_seq=2 ttl=61 time=0.079 ms
+64 bytes from 10.10.2.10: icmp_seq=3 ttl=61 time=0.071 ms
+
+--- 10.10.2.10 ping statistics ---
+3 packets transmitted, 3 received, 0% packet loss, time 2002ms
+rtt min/avg/max/mdev = 0.071/0.543/1.479/0.661 ms
+RESULT: PASS
+
+===== h11 -> 10.20.3.10 : leaf1 VLAN10 -> leaf3 VLAN20 (across the fabric, inter-VLAN) =====
+PING 10.20.3.10 (10.20.3.10) 56(84) bytes of data.
+64 bytes from 10.20.3.10: icmp_seq=1 ttl=61 time=1.32 ms
+64 bytes from 10.20.3.10: icmp_seq=2 ttl=61 time=0.097 ms
+64 bytes from 10.20.3.10: icmp_seq=3 ttl=61 time=0.097 ms
+
+--- 10.20.3.10 ping statistics ---
+3 packets transmitted, 3 received, 0% packet loss, time 2031ms
+rtt min/avg/max/mdev = 0.097/0.504/1.320/0.576 ms
+RESULT: PASS
+
+===== h22 -> 10.10.3.10 : leaf2 VLAN20 -> leaf3 VLAN10 (across the fabric, inter-VLAN) =====
+PING 10.10.3.10 (10.10.3.10) 56(84) bytes of data.
+64 bytes from 10.10.3.10: icmp_seq=1 ttl=61 time=0.996 ms
+64 bytes from 10.10.3.10: icmp_seq=2 ttl=61 time=0.107 ms
+64 bytes from 10.10.3.10: icmp_seq=3 ttl=61 time=0.113 ms
+
+--- 10.10.3.10 ping statistics ---
+3 packets transmitted, 3 received, 0% packet loss, time 2029ms
+rtt min/avg/max/mdev = 0.107/0.405/0.996/0.417 ms
+RESULT: PASS
+
+===== h11 : traceroute 10.20.3.10 =====
+traceroute to 10.20.3.10 (10.20.3.10), 30 hops max, 46 byte packets
+ 1  10.10.1.1  0.067 ms
+ 2  10.1.1.0  0.005 ms
+ 3  10.1.1.5  0.003 ms
+ 4  10.20.3.10  0.003 ms

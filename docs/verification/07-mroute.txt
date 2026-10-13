@@ -1,0 +1,133 @@
+# captured 2026-10-13T16:56:17Z from lab dc-frr
+
+===== spine1 : show ip mroute =====
+IP Multicast Routing Table
+Flags: S - Sparse, C - Connected, P - Pruned
+       R - SGRpt Pruned, F - Register flag, T - SPT-bit set
+ Source      Group      Flags  Proto  Input  Output  TTL  Uptime    
+ *           239.1.1.1  S      PIM    lo     eth1    1    00:00:32  
+                               PIM           eth2    1              
+                               PIM           eth3    1              
+ 10.10.1.10  239.1.1.1  SRT    STAR   eth1   eth2    1    00:00:24  
+                               STAR          eth3    1              
+
+
+===== spine1 : show ip pim join =====
+ Interface  Address   Source      Group      State     Uptime    Expire  Prune  
+ eth1       10.1.1.0  *           239.1.1.1  JOIN      00:00:30  03:05   --:--  
+ eth1       10.1.1.0  10.10.1.10  239.1.1.1  SGRpt(P)  --:--:--  03:05   --:--  
+ eth2       10.1.1.2  *           239.1.1.1  JOIN      00:00:32  02:58   --:--  
+ eth2       10.1.1.2  10.10.1.10  239.1.1.1  JOIN      00:00:24  03:05   --:--  
+ eth3       10.1.1.4  *           239.1.1.1  JOIN      00:00:31  02:58   --:--  
+ eth3       10.1.1.4  10.10.1.10  239.1.1.1  JOIN      00:00:24  03:05   --:--  
+
+
+===== spine2 : show ip mroute =====
+IP Multicast Routing Table
+Flags: S - Sparse, C - Connected, P - Pruned
+       R - SGRpt Pruned, F - Register flag, T - SPT-bit set
+ Source  Group  Flags  Proto  Input  Output  TTL  Uptime  
+
+
+===== spine2 : show ip pim join =====
+ Interface  Address  Source  Group  State  Uptime  Expire  Prune  
+
+
+===== leaf1 : show ip mroute =====
+IP Multicast Routing Table
+Flags: S - Sparse, C - Connected, P - Pruned
+       R - SGRpt Pruned, F - Register flag, T - SPT-bit set
+ Source      Group      Flags  Proto  Input   Output  TTL  Uptime    
+ *           239.1.1.1  SC     IGMP   eth1    pimreg  1    00:00:31  
+                               IGMP           vlan20  1              
+ 10.10.1.10  239.1.1.1  SFT    STAR   vlan10  vlan20  1    00:00:25  
+                               PIM            eth1    1              
+
+
+===== leaf1 : show ip pim join =====
+ Interface  Address    Source      Group       State   Uptime    Expire  Prune  
+ eth1       10.1.1.1   10.10.1.10  239.1.1.1   JOIN    00:00:26  03:29   --:--  
+ vlan10     10.10.1.1  *           224.0.1.40  NOINFO  --:--:--  --:--   --:--  
+ vlan20     10.20.1.1  *           224.0.1.40  NOINFO  --:--:--  --:--   --:--  
+ vlan20     10.20.1.1  *           239.1.1.1   NOINFO  --:--:--  --:--   --:--  
+
+
+===== leaf2 : show ip mroute =====
+IP Multicast Routing Table
+Flags: S - Sparse, C - Connected, P - Pruned
+       R - SGRpt Pruned, F - Register flag, T - SPT-bit set
+ Source      Group      Flags  Proto  Input  Output  TTL  Uptime    
+ *           239.1.1.1  SC     IGMP   eth1   pimreg  1    00:00:34  
+                               IGMP          vlan10  1              
+ 10.10.1.10  239.1.1.1  S      STAR   eth1   vlan10  1    00:00:26  
+
+
+===== leaf2 : show ip pim join =====
+ Interface  Address    Source  Group       State   Uptime    Expire  Prune  
+ vlan10     10.10.2.1  *       224.0.1.40  NOINFO  --:--:--  --:--   --:--  
+ vlan10     10.10.2.1  *       239.1.1.1   NOINFO  --:--:--  --:--   --:--  
+ vlan20     10.20.2.1  *       224.0.1.40  NOINFO  --:--:--  --:--   --:--  
+
+
+===== leaf3 : show ip mroute =====
+IP Multicast Routing Table
+Flags: S - Sparse, C - Connected, P - Pruned
+       R - SGRpt Pruned, F - Register flag, T - SPT-bit set
+ Source      Group      Flags  Proto  Input  Output  TTL  Uptime    
+ *           239.1.1.1  SC     IGMP   eth1   pimreg  1    00:00:34  
+                               IGMP          vlan20  1              
+ 10.10.1.10  239.1.1.1  S      STAR   eth1   vlan20  1    00:00:27  
+
+
+===== leaf3 : show ip pim join =====
+ Interface  Address    Source  Group       State   Uptime    Expire  Prune  
+ vlan10     10.10.3.1  *       224.0.1.40  NOINFO  --:--:--  --:--   --:--  
+ vlan20     10.20.3.1  *       224.0.1.40  NOINFO  --:--:--  --:--   --:--  
+ vlan20     10.20.3.1  *       239.1.1.1   NOINFO  --:--:--  --:--   --:--  
+
+
+===== spine1 : ip mroute show (kernel multicast forwarding cache) =====
+(0.0.0.0,239.1.1.1)              Iif: lo         Oifs: lo eth1 eth2 eth3  State: resolved
+(10.10.1.10,239.1.1.1)           Iif: eth1       Oifs: eth2 eth3  State: resolved
+
+===== spine2 : ip mroute show (kernel multicast forwarding cache) =====
+
+===== leaf1 : ip mroute show (kernel multicast forwarding cache) =====
+(0.0.0.0,239.1.1.1)              Iif: eth1       Oifs: pimreg vlan20 eth1  State: resolved
+(10.10.1.10,239.1.1.1)           Iif: vlan10     Oifs: vlan20 eth1  State: resolved
+
+===== leaf2 : ip mroute show (kernel multicast forwarding cache) =====
+(0.0.0.0,239.1.1.1)              Iif: eth1       Oifs: pimreg vlan10 eth1  State: resolved
+(10.10.1.10,239.1.1.1)           Iif: eth1       Oifs: vlan10  State: resolved
+
+===== leaf3 : ip mroute show (kernel multicast forwarding cache) =====
+(0.0.0.0,239.1.1.1)              Iif: eth1       Oifs: pimreg eth1 vlan20  State: resolved
+(10.10.1.10,239.1.1.1)           Iif: eth1       Oifs: vlan20  State: resolved
+
+===== spine1 : show ip mroute count =====
+
+ Source      Group      LastUsed  Packets  Bytes  WrongIf  
+ *           239.1.1.1  37        0        0      0        
+ 10.10.1.10  239.1.1.1  1         601      65573  1        
+
+
+===== leaf1 : show ip mroute count =====
+
+ Source      Group      LastUsed  Packets  Bytes  WrongIf  
+ *           239.1.1.1  37        0        0      0        
+ 10.10.1.10  239.1.1.1  1         600      65465  1        
+
+
+===== leaf2 : show ip mroute count =====
+
+ Source      Group      LastUsed  Packets  Bytes  WrongIf  
+ *           239.1.1.1  32        1        106    0        
+ 10.10.1.10  239.1.1.1  2         599      65359  0        
+
+
+===== leaf3 : show ip mroute count =====
+
+ Source      Group      LastUsed  Packets  Bytes  WrongIf  
+ *           239.1.1.1  32        1        106    0        
+ 10.10.1.10  239.1.1.1  2         599      65359  0        
+

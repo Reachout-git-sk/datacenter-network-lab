@@ -1,0 +1,18 @@
+# captured 2026-10-13T16:56:34Z from lab dc-frr
+feed: h11 (10.10.1.10, leaf1 VLAN10) -> 239.1.1.1:5001, 20 pkt/s, 600 packets
+
+===== h11 : publisher =====
+publishing to 239.1.1.1:5001 at 20.0/s ttl=16
+{"role": "publisher", "group": "239.1.1.1", "sent": 600, "seconds": 30.0}
+
+===== h21 : subscriber =====
+{"role": "subscriber", "host": "h21", "group": "239.1.1.1", "received": 600, "first_seq": 1, "last_seq": 600, "gaps": 0, "senders": ["10.10.1.10"]}
+
+===== h32 : subscriber =====
+{"role": "subscriber", "host": "h32", "group": "239.1.1.1", "received": 600, "first_seq": 1, "last_seq": 600, "gaps": 0, "senders": ["10.10.1.10"]}
+
+===== h12 : subscriber =====
+{"role": "subscriber", "host": "h12", "group": "239.1.1.1", "received": 599, "first_seq": 2, "last_seq": 600, "gaps": 0, "senders": ["10.10.1.10"]}
+
+===== h22 : control host (no IGMP join), packets seen on the wire =====
+0

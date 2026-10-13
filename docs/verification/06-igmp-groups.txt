@@ -1,0 +1,76 @@
+# captured 2026-10-13T16:56:12Z from lab dc-frr
+
+===== leaf1 : show ip igmp groups =====
+Total IGMP groups: 3
+Watermark warn limit(Not Set): 0
+Interface        Group           Mode Timer    Srcs V Uptime
+vlan10           224.0.1.40      EXCL 00:03:58    1 3 00:00:55
+vlan20           224.0.1.40      EXCL 00:04:00    1 3 00:00:55
+vlan20           239.1.1.1       EXCL 00:04:02    1 3 00:00:24
+
+===== leaf1 : show ip igmp interface =====
+Interface         State          Address  V  Querier          QuerierIp  Query Timer    Uptime
+eth1               mtrc         10.1.1.1  3    other           10.1.1.1     --:--:--  00:00:54
+eth2               mtrc         10.1.2.1  3    other           10.1.2.1     --:--:--  00:00:55
+lo                 mtrc        10.0.0.11  3    other          10.0.0.11     --:--:--  00:00:56
+vlan10               up        10.10.1.1  3    local          10.10.1.1     00:01:41  00:00:56
+vlan20               up        10.20.1.1  3    local          10.20.1.1     00:01:41  00:00:56
+
+===== leaf1 : bridge mdb show (IGMP snooping table) =====
+dev br0 port eth4 grp 239.1.1.1 temp vid 20
+dev br0 port eth4 grp ff02::1:ffcc:e231 temp vid 20
+dev br0 port br0 grp 224.0.1.40 temp vid 20
+dev br0 port br0 grp 224.0.1.40 temp vid 10
+dev br0 port eth3 grp ff02::1:ff05:7b4f temp vid 10
+dev br0 port br0 grp ff02::1:ffcf:a426 temp vid 10
+dev br0 port br0 grp ff02::1:ffcf:a426 temp vid 20
+
+===== leaf2 : show ip igmp groups =====
+Total IGMP groups: 3
+Watermark warn limit(Not Set): 0
+Interface        Group           Mode Timer    Srcs V Uptime
+vlan10           224.0.1.40      EXCL 00:04:04    1 3 00:00:57
+vlan10           239.1.1.1       EXCL 00:04:01    1 3 00:00:29
+vlan20           224.0.1.40      EXCL 00:03:58    1 3 00:00:57
+
+===== leaf2 : show ip igmp interface =====
+Interface         State          Address  V  Querier          QuerierIp  Query Timer    Uptime
+eth1               mtrc         10.1.1.3  3    other           10.1.1.3     --:--:--  00:00:56
+eth2               mtrc         10.1.2.3  3    other           10.1.2.3     --:--:--  00:00:57
+lo                 mtrc        10.0.0.12  3    other          10.0.0.12     --:--:--  00:00:57
+vlan10               up        10.10.2.1  3    local          10.10.2.1     00:01:39  00:00:57
+vlan20               up        10.20.2.1  3    local          10.20.2.1     00:01:39  00:00:57
+
+===== leaf2 : bridge mdb show (IGMP snooping table) =====
+dev br0 port eth3 grp 239.1.1.1 temp vid 10
+dev br0 port eth3 grp ff02::1:ff03:95d7 temp vid 10
+dev br0 port eth4 grp ff02::1:ffd9:1bdd temp vid 20
+dev br0 port br0 grp 224.0.1.40 temp vid 20
+dev br0 port br0 grp 224.0.1.40 temp vid 10
+dev br0 port br0 grp ff02::1:ff1c:9e9b temp vid 20
+dev br0 port br0 grp ff02::1:ff1c:9e9b temp vid 10
+
+===== leaf3 : show ip igmp groups =====
+Total IGMP groups: 3
+Watermark warn limit(Not Set): 0
+Interface        Group           Mode Timer    Srcs V Uptime
+vlan10           224.0.1.40      EXCL 00:03:59    1 3 00:00:57
+vlan20           224.0.1.40      EXCL 00:03:59    1 3 00:00:57
+vlan20           239.1.1.1       EXCL 00:03:59    1 3 00:00:29
+
+===== leaf3 : show ip igmp interface =====
+Interface         State          Address  V  Querier          QuerierIp  Query Timer    Uptime
+eth1               mtrc         10.1.1.5  3    other           10.1.1.5     --:--:--  00:00:58
+eth2               mtrc         10.1.2.5  3    other           10.1.2.5     --:--:--  00:00:58
+lo                 mtrc        10.0.0.13  3    other          10.0.0.13     --:--:--  00:00:58
+vlan10               up        10.10.3.1  3    local          10.10.3.1     00:01:39  00:00:58
+vlan20               up        10.20.3.1  3    local          10.20.3.1     00:01:39  00:00:58
+
+===== leaf3 : bridge mdb show (IGMP snooping table) =====
+dev br0 port eth4 grp 239.1.1.1 temp vid 20
+dev br0 port br0 grp 224.0.1.40 temp vid 20
+dev br0 port br0 grp 224.0.1.40 temp vid 10
+dev br0 port eth3 grp ff02::1:ff6c:3894 temp vid 10
+dev br0 port eth4 grp ff02::1:ff2f:7b31 temp vid 20
+dev br0 port br0 grp ff02::1:ff3e:6c4 temp vid 20
+dev br0 port br0 grp ff02::1:ff3e:6c4 temp vid 10
