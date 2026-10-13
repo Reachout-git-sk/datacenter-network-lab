@@ -22,7 +22,7 @@ banner() { printf '\n===== %s : %s =====\n' "$1" "$2"; }
 stamp() { echo "# captured $(date -u +%Y-%m-%dT%H:%M:%SZ) from lab ${LAB}"; }
 
 echo "waiting for BGP sessions..."
-for i in $(seq 1 60); do
+for _ in $(seq 1 60); do
   est=0
   for r in $ROUTERS; do
     est=$((est + $(vty "$r" "show bgp summary json" | grep -o '"state":"Established"' | wc -l)))
@@ -112,7 +112,7 @@ sleep 12  # feed is flowing: capture control-plane state now
 } > "$OUT/07-mroute.txt"
 
 echo "waiting for the feed to finish..."
-for i in $(seq 1 $((DUR + 10))); do
+for _ in $(seq 1 $((DUR + 10))); do
   done_count=0
   for s in $SUBS; do dx "${s%%:*}" grep -q received /tmp/sub.json 2>/dev/null && done_count=$((done_count + 1)); done
   [ "$done_count" -eq 3 ] && break

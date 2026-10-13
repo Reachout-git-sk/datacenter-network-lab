@@ -25,10 +25,10 @@ jobs:
       - name: Lint shell scripts
         run: shellcheck scripts/*.sh configs/frr/sysctl.sh configs/frr/*/l2-setup.sh images/frr-ssh/entrypoint.sh
 
-      - name: Check FRR configs parse (vtysh dry run)
+      - name: Check FRR configs parse (vtysh -C)
         run: |
           docker run --rm -v "$PWD/configs/frr:/cfg:ro" quay.io/frrouting/frr:10.2.1 \
-            sh -c 'for f in /cfg/*/frr.conf; do echo "== $f"; vtysh --dryrun --inputfile="$f" || exit 1; done'
+            sh -c 'touch /etc/frr/vtysh.conf; for f in /cfg/*/frr.conf; do echo "== $f"; vtysh -C -f "$f" || exit 1; done'
 
       - name: Check Grafana dashboard is generated from build_dashboard.py
         run: |
