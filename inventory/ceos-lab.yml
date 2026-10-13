@@ -1,0 +1,74 @@
+# Inventory for the cEOS variant (topologies/dc-ceos.clab.yml, needs the cEOS image).
+# Leaves are Arista cEOS (Netmiko device_type "arista_eos", EOS CLI with "| json"),
+# spines are FRR (Netmiko "linux" + vtysh). Lab-only credentials.
+defaults:
+  username: admin
+  password: admin
+  port: 22
+
+devices:
+  spine1:
+    host: 172.40.40.11
+    platform: frr
+    device_type: linux
+    username: netops
+    password: netops
+    role: spine
+    expect:
+      interfaces_up: [eth1, eth2, eth3]
+      bgp_neighbors:
+        10.1.1.1: {peer: leaf1, prefixes: 3}
+        10.1.1.3: {peer: leaf2, prefixes: 3}
+        10.1.1.5: {peer: leaf3, prefixes: 3}
+      pim_neighbors: 3
+
+  spine2:
+    host: 172.40.40.12
+    platform: frr
+    device_type: linux
+    username: netops
+    password: netops
+    role: spine
+    expect:
+      interfaces_up: [eth1, eth2, eth3]
+      bgp_neighbors:
+        10.1.2.1: {peer: leaf1, prefixes: 3}
+        10.1.2.3: {peer: leaf2, prefixes: 3}
+        10.1.2.5: {peer: leaf3, prefixes: 3}
+      pim_neighbors: 3
+
+  leaf1:
+    host: 172.40.40.21
+    platform: eos
+    device_type: arista_eos
+    role: leaf
+    expect:
+      interfaces_up: [Ethernet1, Ethernet2, Ethernet3, Ethernet4, Vlan10, Vlan20]
+      bgp_neighbors:
+        10.1.1.0: {peer: spine1, prefixes: 7}
+        10.1.2.0: {peer: spine2, prefixes: 7}
+      pim_neighbors: 2
+
+  leaf2:
+    host: 172.40.40.22
+    platform: eos
+    device_type: arista_eos
+    role: leaf
+    expect:
+      interfaces_up: [Ethernet1, Ethernet2, Ethernet3, Ethernet4, Vlan10, Vlan20]
+      bgp_neighbors:
+        10.1.1.2: {peer: spine1, prefixes: 7}
+        10.1.2.2: {peer: spine2, prefixes: 7}
+      pim_neighbors: 2
+
+  leaf3:
+    host: 172.40.40.23
+    platform: eos
+    device_type: arista_eos
+    role: leaf
+    expect:
+      interfaces_up: [Ethernet1, Ethernet2, Ethernet3, Ethernet4, Vlan10, Vlan20]
+      bgp_neighbors:
+        10.1.1.4: {peer: spine1, prefixes: 7}
+        10.1.2.4: {peer: spine2, prefixes: 7}
+      pim_neighbors: 2

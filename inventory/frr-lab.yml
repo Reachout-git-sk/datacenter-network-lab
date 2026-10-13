@@ -1,0 +1,63 @@
+# Inventory for the all-FRR lab (topologies/dc-frr.clab.yml).
+# Transport: SSH (Netmiko device_type "linux") into the FRR container, then
+# vtysh -c "<command>" for routing state and iproute2 for interface counters.
+# Lab-only credentials, set in images/frr-ssh/Dockerfile.
+defaults:
+  platform: frr
+  device_type: linux
+  username: netops
+  password: netops
+  port: 22
+
+devices:
+  spine1:
+    host: 172.30.30.11
+    role: spine
+    expect:
+      interfaces_up: [eth1, eth2, eth3]
+      bgp_neighbors:
+        10.1.1.1: {peer: leaf1, prefixes: 3}
+        10.1.1.3: {peer: leaf2, prefixes: 3}
+        10.1.1.5: {peer: leaf3, prefixes: 3}
+      pim_neighbors: 3
+
+  spine2:
+    host: 172.30.30.12
+    role: spine
+    expect:
+      interfaces_up: [eth1, eth2, eth3]
+      bgp_neighbors:
+        10.1.2.1: {peer: leaf1, prefixes: 3}
+        10.1.2.3: {peer: leaf2, prefixes: 3}
+        10.1.2.5: {peer: leaf3, prefixes: 3}
+      pim_neighbors: 3
+
+  leaf1:
+    host: 172.30.30.21
+    role: leaf
+    expect:
+      interfaces_up: [eth1, eth2, eth3, eth4, br0, vlan10, vlan20]
+      bgp_neighbors:
+        10.1.1.0: {peer: spine1, prefixes: 7}
+        10.1.2.0: {peer: spine2, prefixes: 7}
+      pim_neighbors: 2
+
+  leaf2:
+    host: 172.30.30.22
+    role: leaf
+    expect:
+      interfaces_up: [eth1, eth2, eth3, eth4, br0, vlan10, vlan20]
+      bgp_neighbors:
+        10.1.1.2: {peer: spine1, prefixes: 7}
+        10.1.2.2: {peer: spine2, prefixes: 7}
+      pim_neighbors: 2
+
+  leaf3:
+    host: 172.30.30.23
+    role: leaf
+    expect:
+      interfaces_up: [eth1, eth2, eth3, eth4, br0, vlan10, vlan20]
+      bgp_neighbors:
+        10.1.1.4: {peer: spine1, prefixes: 7}
+        10.1.2.4: {peer: spine2, prefixes: 7}
+      pim_neighbors: 2
