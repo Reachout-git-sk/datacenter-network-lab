@@ -1,0 +1,63 @@
+# captured 2026-10-13T17:44:29Z: leaf3 eth1 (uplink to spine1) administratively shut down at 17:44:03
+
+===== leaf3 : show ip bgp summary =====
+
+IPv4 Unicast Summary:
+BGP router identifier 10.0.0.13, local AS number 65103 VRF default vrf-id 0
+BGP table version 18
+RIB entries 19, using 2432 bytes of memory
+Peers 2, using 33 KiB of memory
+Peer groups 1, using 64 bytes of memory
+
+Neighbor         V         AS   MsgRcvd   MsgSent   TblVer  InQ OutQ  Up/Down State/PfxRcd   PfxSnt Desc
+spine1(10.1.1.4) 4      65000        77        77        0    0    0 00:00:27       Active        0 spine1
+spine2(10.1.2.4) 4      65000        85        86       18    0    0 00:03:57            7       10 spine2
+
+Total number of neighbors 2
+
+===== leaf3 : show ip route 10.10.1.0/24 =====
+Routing entry for 10.10.1.0/24
+  Known via "bgp", distance 20, metric 0, best
+  Last update 00:00:27 ago
+    10.1.1.4, via eth1 inactive, weight 1
+  * 10.1.2.4, via eth2, weight 1
+
+
+===== leaf3 : show ip route 10.0.0.1/32 =====
+% Network not in table
+
+===== leaf3 : show ip pim rp-info =====
+ RP address  group/prefix-list  OIF      I am RP  Source  Group-Type  
+ 10.0.0.1    239.0.0.0/8        Unknown  no       Static  ASM         
+
+
+===== leaf3 : show ip pim neighbor =====
+ Interface  Neighbor  Uptime    Holdtime  DR Pri  
+ eth2       10.1.2.4  00:03:59  00:01:15  1       
+
+
+===== leaf3 : show ip mroute =====
+IP Multicast Routing Table
+Flags: S - Sparse, C - Connected, P - Pruned
+       R - SGRpt Pruned, F - Register flag, T - SPT-bit set
+ Source      Group      Flags  Proto  Input  Output  TTL  Uptime    
+ 10.10.1.10  239.1.1.1  ST     STAR   eth2   vlan20  1    00:00:29  
+
+
+===== h31 -> 10.10.1.10 : unicast still works via spine2 =====
+PING 10.10.1.10 (10.10.1.10) 56(84) bytes of data.
+64 bytes from 10.10.1.10: icmp_seq=1 ttl=61 time=0.747 ms
+64 bytes from 10.10.1.10: icmp_seq=2 ttl=61 time=0.145 ms
+64 bytes from 10.10.1.10: icmp_seq=3 ttl=61 time=0.115 ms
+
+--- 10.10.1.10 ping statistics ---
+3 packets transmitted, 3 received, 0% packet loss, time 2044ms
+rtt min/avg/max/mdev = 0.115/0.335/0.747/0.291 ms
+
+===== h32 (leaf3 VLAN20 subscriber): packets received in 5 s while the uplink is down =====
+978
+
+===== h21 (leaf2 VLAN10 subscriber): packets received in 5 s =====
+978
+
+# leaf3 eth1 'no shutdown' at 17:46:30 UTC (outage window 17:44:03-17:46:30, visible in docs/img/grafana-dc-fabric.png)
