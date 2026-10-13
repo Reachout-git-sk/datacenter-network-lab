@@ -1,0 +1,19 @@
+# containerlab runtime directories
+clab-*/
+.clab-*
+topologies/clab-*/
+topologies/.*.clab.yml.bak
+
+# python
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# timestamped config backups (a sample set is kept under docs/)
+backups/*
+!backups/.gitkeep
+
+# local scratch
+*.log
+.tmp/
