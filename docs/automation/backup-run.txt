@@ -1,0 +1,7 @@
+Config backup -> backups/20261013T170314Z
+  OK    spine1   backups/20261013T170314Z/spine1.cfg (903 bytes)
+  OK    spine2   backups/20261013T170314Z/spine2.cfg (903 bytes)
+  OK    leaf1    backups/20261013T170314Z/leaf1.cfg (1089 bytes)
+  OK    leaf2    backups/20261013T170314Z/leaf2.cfg (1089 bytes)
+  OK    leaf3    backups/20261013T170314Z/leaf3.cfg (1089 bytes)
+5 saved, 0 failed

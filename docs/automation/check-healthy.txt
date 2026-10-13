@@ -1,0 +1,72 @@
+Fabric health check (frr-lab.yml)
+=================================
+DEVICE  CHECK          TARGET             STATUS  DETAIL
+------  -------------  -----------------  ------  ------
+spine1  reachability   ssh                PASS    connected
+spine1  bgp_session    10.1.1.1 (leaf1)   PASS    Established, AS 65101
+spine1  bgp_prefixes   10.1.1.1 (leaf1)   PASS    received 3, expected 3
+spine1  bgp_session    10.1.1.3 (leaf2)   PASS    Established, AS 65102
+spine1  bgp_prefixes   10.1.1.3 (leaf2)   PASS    received 3, expected 3
+spine1  bgp_session    10.1.1.5 (leaf3)   PASS    Established, AS 65103
+spine1  bgp_prefixes   10.1.1.5 (leaf3)   PASS    received 3, expected 3
+spine1  interface      eth1               PASS    up, errors 0
+spine1  interface      eth2               PASS    up, errors 0
+spine1  interface      eth3               PASS    up, errors 0
+spine1  pim_neighbors  count              PASS    3 (expected 3): 10.1.1.1@eth1, 10.1.1.3@eth2, 10.1.1.5@eth3
+
+spine2  reachability   ssh                PASS    connected
+spine2  bgp_session    10.1.2.1 (leaf1)   PASS    Established, AS 65101
+spine2  bgp_prefixes   10.1.2.1 (leaf1)   PASS    received 3, expected 3
+spine2  bgp_session    10.1.2.3 (leaf2)   PASS    Established, AS 65102
+spine2  bgp_prefixes   10.1.2.3 (leaf2)   PASS    received 3, expected 3
+spine2  bgp_session    10.1.2.5 (leaf3)   PASS    Established, AS 65103
+spine2  bgp_prefixes   10.1.2.5 (leaf3)   PASS    received 3, expected 3
+spine2  interface      eth1               PASS    up, errors 0
+spine2  interface      eth2               PASS    up, errors 0
+spine2  interface      eth3               PASS    up, errors 0
+spine2  pim_neighbors  count              PASS    3 (expected 3): 10.1.2.1@eth1, 10.1.2.3@eth2, 10.1.2.5@eth3
+
+leaf1   reachability   ssh                PASS    connected
+leaf1   bgp_session    10.1.1.0 (spine1)  PASS    Established, AS 65000
+leaf1   bgp_prefixes   10.1.1.0 (spine1)  PASS    received 7, expected 7
+leaf1   bgp_session    10.1.2.0 (spine2)  PASS    Established, AS 65000
+leaf1   bgp_prefixes   10.1.2.0 (spine2)  PASS    received 7, expected 7
+leaf1   interface      eth1               PASS    up, errors 0
+leaf1   interface      eth2               PASS    up, errors 0
+leaf1   interface      eth3               PASS    up, errors 0
+leaf1   interface      eth4               PASS    up, errors 0
+leaf1   interface      br0                PASS    up, errors 0
+leaf1   interface      vlan10             PASS    up, errors 0
+leaf1   interface      vlan20             PASS    up, errors 0
+leaf1   pim_neighbors  count              PASS    2 (expected 2): 10.1.1.0@eth1, 10.1.2.0@eth2
+
+leaf2   reachability   ssh                PASS    connected
+leaf2   bgp_session    10.1.1.2 (spine1)  PASS    Established, AS 65000
+leaf2   bgp_prefixes   10.1.1.2 (spine1)  PASS    received 7, expected 7
+leaf2   bgp_session    10.1.2.2 (spine2)  PASS    Established, AS 65000
+leaf2   bgp_prefixes   10.1.2.2 (spine2)  PASS    received 7, expected 7
+leaf2   interface      eth1               PASS    up, errors 0
+leaf2   interface      eth2               PASS    up, errors 0
+leaf2   interface      eth3               PASS    up, errors 0
+leaf2   interface      eth4               PASS    up, errors 0
+leaf2   interface      br0                PASS    up, errors 0
+leaf2   interface      vlan10             PASS    up, errors 0
+leaf2   interface      vlan20             PASS    up, errors 0
+leaf2   pim_neighbors  count              PASS    2 (expected 2): 10.1.1.2@eth1, 10.1.2.2@eth2
+
+leaf3   reachability   ssh                PASS    connected
+leaf3   bgp_session    10.1.1.4 (spine1)  PASS    Established, AS 65000
+leaf3   bgp_prefixes   10.1.1.4 (spine1)  PASS    received 7, expected 7
+leaf3   bgp_session    10.1.2.4 (spine2)  PASS    Established, AS 65000
+leaf3   bgp_prefixes   10.1.2.4 (spine2)  PASS    received 7, expected 7
+leaf3   interface      eth1               PASS    up, errors 0
+leaf3   interface      eth2               PASS    up, errors 0
+leaf3   interface      eth3               PASS    up, errors 0
+leaf3   interface      eth4               PASS    up, errors 0
+leaf3   interface      br0                PASS    up, errors 0
+leaf3   interface      vlan10             PASS    up, errors 0
+leaf3   interface      vlan20             PASS    up, errors 0
+leaf3   pim_neighbors  count              PASS    2 (expected 2): 10.1.1.4@eth1, 10.1.2.4@eth2
+
+61 passed, 0 failed -> OK
+exit=0
