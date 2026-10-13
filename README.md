@@ -407,7 +407,7 @@ first deploy and then refresh the EOS test fixtures with real output.
 
 - **lint-and-test**: yamllint, shellcheck, `vtysh -C` syntax check of every
   `frr.conf` in the FRR image, a check that the dashboard JSON matches its
-  generator, and pytest.
+  build script, and pytest.
 - **lab**: installs containerlab on `ubuntu-latest`, builds the images,
   deploys `dc-frr`, runs `scripts/verify.sh` and the automation `check` and
   `backup`, uploads the outputs as an artifact, and destroys the lab.

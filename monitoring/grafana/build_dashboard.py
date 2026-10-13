@@ -1,4 +1,4 @@
-"""Generate the provisioned Grafana dashboard (dashboards/dc-fabric.json).
+"""Build the provisioned Grafana dashboard (dashboards/dc-fabric.json).
 
     python monitoring/grafana/build_dashboard.py
 """
