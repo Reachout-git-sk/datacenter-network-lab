@@ -1,4 +1,4 @@
-# Data Center Network Lab: Arista cEOS, FRRouting, Containerlab
+# Data Center Network Lab: FRRouting, Containerlab (Arista cEOS-ready)
 
 A virtual spine-leaf data center fabric built with Containerlab. It covers
 VLANs and inter-VLAN routing on the leaves, eBGP between spines and leaves
