@@ -1,0 +1,137 @@
+# Data center spine-leaf lab, Arista cEOS variant.
+#
+# STATUS: NEEDS THE cEOS IMAGE. This file is prepared but cannot be deployed
+# until the Arista cEOS-lab image has been imported (Arista account required):
+#
+#   docker import cEOS64-lab-<version>.tar.xz ceos:<version>
+#   CEOS_VERSION=<version> containerlab deploy -t topologies/dc-ceos.clab.yml
+#
+#   2 spines (FRR, AS 65000, same configs as the all-FRR variant, RP on spine1)
+#   3 leaves (Arista cEOS, AS 65101-65103): VLAN 10/20 access ports, SVIs with
+#     inter-VLAN routing, IGMP snooping, IGMP + PIM-SM on the SVIs
+#   eBGP on every spine-leaf /31 with ECMP across both spines
+#
+# Leaves are the vendor switches because that is where the feature-rich edge
+# work happens (VLANs, SVIs, IGMP snooping, PIM DR for the hosts); the spines
+# only route, so an open routing stack (FRR) is a realistic choice there.
+name: dc-ceos
+
+mgmt:
+  network: dclab-ceos-mgmt
+  ipv4-subnet: 172.40.40.0/24
+
+topology:
+  kinds:
+    arista_ceos:
+      image: ceos:${CEOS_VERSION:=4.33.1F}
+    linux:
+      image: dclab/host:1.0
+
+  nodes:
+    spine1:
+      kind: linux
+      image: dclab/frr-ssh:10.2.1
+      mgmt-ipv4: 172.40.40.11
+      binds:
+        - ../configs/frr/daemons:/etc/frr/daemons:ro
+        - ../configs/frr/spine1/frr.conf:/etc/frr/frr.conf
+        - ../configs/frr/sysctl.sh:/etc/frr/sysctl.sh:ro
+      exec: [/etc/frr/sysctl.sh]
+      labels: {role: spine}
+    spine2:
+      kind: linux
+      image: dclab/frr-ssh:10.2.1
+      mgmt-ipv4: 172.40.40.12
+      binds:
+        - ../configs/frr/daemons:/etc/frr/daemons:ro
+        - ../configs/frr/spine2/frr.conf:/etc/frr/frr.conf
+        - ../configs/frr/sysctl.sh:/etc/frr/sysctl.sh:ro
+      exec: [/etc/frr/sysctl.sh]
+      labels: {role: spine}
+
+    leaf1:
+      kind: arista_ceos
+      mgmt-ipv4: 172.40.40.21
+      startup-config: ../configs/ceos/leaf1.cfg
+      labels: {role: leaf}
+    leaf2:
+      kind: arista_ceos
+      mgmt-ipv4: 172.40.40.22
+      startup-config: ../configs/ceos/leaf2.cfg
+      labels: {role: leaf}
+    leaf3:
+      kind: arista_ceos
+      mgmt-ipv4: 172.40.40.23
+      startup-config: ../configs/ceos/leaf3.cfg
+      labels: {role: leaf}
+
+    h11:
+      kind: linux
+      mgmt-ipv4: 172.40.40.111
+      binds: [../apps/mcast:/opt/mcast:ro]
+      exec:
+        - ip addr add 10.10.1.10/24 dev eth1
+        - ip link set eth1 up
+        - ip route replace default via 10.10.1.1 dev eth1
+      labels: {role: host, leaf: leaf1, vlan: "10", mcast: publisher}
+    h12:
+      kind: linux
+      mgmt-ipv4: 172.40.40.112
+      binds: [../apps/mcast:/opt/mcast:ro]
+      exec:
+        - ip addr add 10.20.1.10/24 dev eth1
+        - ip link set eth1 up
+        - ip route replace default via 10.20.1.1 dev eth1
+      labels: {role: host, leaf: leaf1, vlan: "20"}
+    h21:
+      kind: linux
+      mgmt-ipv4: 172.40.40.121
+      binds: [../apps/mcast:/opt/mcast:ro]
+      exec:
+        - ip addr add 10.10.2.10/24 dev eth1
+        - ip link set eth1 up
+        - ip route replace default via 10.10.2.1 dev eth1
+      labels: {role: host, leaf: leaf2, vlan: "10", mcast: subscriber}
+    h22:
+      kind: linux
+      mgmt-ipv4: 172.40.40.122
+      binds: [../apps/mcast:/opt/mcast:ro]
+      exec:
+        - ip addr add 10.20.2.10/24 dev eth1
+        - ip link set eth1 up
+        - ip route replace default via 10.20.2.1 dev eth1
+      labels: {role: host, leaf: leaf2, vlan: "20"}
+    h31:
+      kind: linux
+      mgmt-ipv4: 172.40.40.131
+      binds: [../apps/mcast:/opt/mcast:ro]
+      exec:
+        - ip addr add 10.10.3.10/24 dev eth1
+        - ip link set eth1 up
+        - ip route replace default via 10.10.3.1 dev eth1
+      labels: {role: host, leaf: leaf3, vlan: "10"}
+    h32:
+      kind: linux
+      mgmt-ipv4: 172.40.40.132
+      binds: [../apps/mcast:/opt/mcast:ro]
+      exec:
+        - ip addr add 10.20.3.10/24 dev eth1
+        - ip link set eth1 up
+        - ip route replace default via 10.20.3.1 dev eth1
+      labels: {role: host, leaf: leaf3, vlan: "20", mcast: subscriber}
+
+  links:
+    # fabric: spineN ethL <-> leafL EthernetN (containerlab names cEOS ports ethN)
+    - endpoints: ["spine1:eth1", "leaf1:eth1"]
+    - endpoints: ["spine1:eth2", "leaf2:eth1"]
+    - endpoints: ["spine1:eth3", "leaf3:eth1"]
+    - endpoints: ["spine2:eth1", "leaf1:eth2"]
+    - endpoints: ["spine2:eth2", "leaf2:eth2"]
+    - endpoints: ["spine2:eth3", "leaf3:eth2"]
+    # access: Ethernet3 = VLAN 10, Ethernet4 = VLAN 20
+    - endpoints: ["leaf1:eth3", "h11:eth1"]
+    - endpoints: ["leaf1:eth4", "h12:eth1"]
+    - endpoints: ["leaf2:eth3", "h21:eth1"]
+    - endpoints: ["leaf2:eth4", "h22:eth1"]
+    - endpoints: ["leaf3:eth3", "h31:eth1"]
+    - endpoints: ["leaf3:eth4", "h32:eth1"]
